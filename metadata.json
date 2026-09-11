@@ -1,0 +1,6 @@
+{
+  "name": "JobPulse",
+  "description": "24/7 personal job search assistant that parses your resume, scores live global jobs with TF-IDF, tracks applications, and alerts you instantly.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
