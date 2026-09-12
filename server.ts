@@ -211,19 +211,6 @@ app.patch("/api/matches/:id", requireAuth, async (req, res) => {
   }
 });
 
-function extractTextFromPdfBuffer(buffer: Buffer): string {
-  let extracted = "";
-
-  // Strategy 1: PDFParse library
-  try {
-    const parser = new PDFParse({ data: buffer });
-    // PDFParse in v2 is synchronous or async? Let's check parser.getText
-  } catch (err) {
-    // Ignore and proceed
-  }
-  return extracted;
-}
-
 function fallbackDeepParseResume(text: string, fileName?: string) {
   const clean = text.replace(/\r\n/g, "\n");
   const lines = clean.split("\n").map((l) => l.trim()).filter(Boolean);
@@ -243,7 +230,7 @@ function fallbackDeepParseResume(text: string, fileName?: string) {
 
   // 3. Location Extraction
   let location = "";
-  const locationMatch = clean.match(/(?:Location|Address|City)?\s*[:|•\-]?\s*([A-Za-z\s]+,\s*[A-Za-z\s]+)/i);
+  const locationMatch = clean.match(/(?:Location|Address|City)?\s*[:|•-]?\s*([A-Za-z\s]+,\s*[A-Za-z\s]+)/i);
   if (locationMatch && locationMatch[1].length < 50) {
     location = locationMatch[1].trim();
   } else if (/pune/i.test(clean)) {
@@ -260,7 +247,7 @@ function fallbackDeepParseResume(text: string, fileName?: string) {
   let name = "";
   
   // A. Check explicit name label
-  const explicitName = clean.match(/(?:Name|Candidate\s*Name)\s*[:\-]\s*([A-Za-z\s.'-]+)/i);
+  const explicitName = clean.match(/(?:Name|Candidate\s*Name)\s*[: -]\s*([A-Za-z\s.'-]+)/i);
   if (explicitName && explicitName[1].trim().length > 2 && explicitName[1].trim().length < 40) {
     name = explicitName[1].trim();
   }
@@ -315,7 +302,7 @@ function fallbackDeepParseResume(text: string, fileName?: string) {
   }
 
   // 5. Target Professional Title
-  let target_title = "";
+  let target_title: string;
   const titleRegex = /(?:Senior|Lead|Principal|Junior|Staff)?\s*(?:Software\s+Test(?:ing)?\s+(?:Engineer|Analyst)|QA\s+(?:Automation|Test(?:ing)?|Manual)?\s*(?:Engineer|Analyst|Lead|Specialist)|SDET|Software\s+Development\s+Engineer\s+in\s+Test|Full\s*Stack\s+Developer|Full\s*Stack\s+Engineer|Frontend\s+(?:Developer|Engineer)|Backend\s+(?:Developer|Engineer)|DevOps\s+Engineer|Cloud\s+Engineer|Data\s+(?:Engineer|Scientist)|Test\s+Automation\s+Engineer)/i;
   const titleMatch = clean.match(titleRegex);
   if (titleMatch) {
@@ -382,7 +369,7 @@ function fallbackDeepParseResume(text: string, fileName?: string) {
   }
 
   // 8. Actual Executive Summary Extraction from Document
-  let executive_summary = "";
+  let executive_summary: string;
   const summaryBlockMatch = clean.match(
     /(?:PROFESSIONAL\s+SUMMARY|EXECUTIVE\s+SUMMARY|SUMMARY|PROFILE|OBJECTIVE)\s*\n+([\s\S]*?)(?=\n\s*(?:CORE\s+COMPETENCIES|TECHNICAL\s+SKILLS|SKILLS|PROFESSIONAL\s+EXPERIENCE|EXPERIENCE|WORK\s+HISTORY|EMPLOYMENT|EDUCATION)|$)/i
   );
@@ -447,10 +434,10 @@ function fallbackDeepParseResume(text: string, fileName?: string) {
     const bullets = expBlockMatch[1]
       .split(/\n/)
       .map((l) => l.trim())
-      .filter((l) => /^[•·\-\*]/.test(l) && l.length > 25);
+      .filter((l) => /^[•·\-*]/.test(l) && l.length > 25);
 
     for (const b of bullets.slice(0, 4)) {
-      highlights.push(b.replace(/^[•·\-\*]\s*/, "").trim());
+      highlights.push(b.replace(/^[•·\-*]\s*/, "").trim());
     }
   }
 
@@ -584,7 +571,7 @@ app.post("/api/resume/parse", requireAuth, async (req, res) => {
         if (!decoded.includes("\x00") && decoded.trim().length > 20) {
           extractedText = decoded;
         } else {
-          const printable = buffer.toString("latin1").match(/[A-Za-z0-9 .,:;@/()_#+&'\"–-]{4,}/g);
+          const printable = buffer.toString("latin1").match(/[A-Za-z0-9 .,:;@/()_#+&'"–-]{4,}/g);
           if (printable && printable.length > 5) {
             extractedText = printable.join("\n");
           }
@@ -1234,8 +1221,6 @@ async function startServer() {
     const vite = await createViteServer({
       server: { 
         middlewareMode: true,
-        hmr: false,
-        ws: false,
       },
       appType: "spa",
     });

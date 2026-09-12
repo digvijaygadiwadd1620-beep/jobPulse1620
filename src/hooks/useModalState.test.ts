@@ -4,7 +4,7 @@ import { useModalState } from './useModalState';
 // Simplified unit test for modal state transitions
 describe('useModalState logic', () => {
   it('initializes with all modals closed', () => {
-    let state = { type: null, job: null };
+    const state = { type: null, job: null };
     const isOpen = (type: string) => state.type === type;
 
     expect(isOpen('alert')).toBe(false);
