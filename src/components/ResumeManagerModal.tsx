@@ -710,7 +710,7 @@ export const ResumeManagerModal: React.FC<ResumeManagerModalProps> = ({
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Digvijay Gadiwadd"
+                  placeholder="e.g. Alex Morgan"
                   className="w-full px-3 py-2 rounded-xl bg-slate-850 border border-slate-750 text-white text-xs focus:outline-none focus:border-indigo-500"
                 />
               </div>
@@ -775,7 +775,7 @@ export const ResumeManagerModal: React.FC<ResumeManagerModalProps> = ({
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="e.g. digvijaygadiwadd1620@gmail.com"
+                  placeholder="e.g. alex.morgan@example.com"
                   className="w-full px-3 py-2 rounded-xl bg-slate-850 border border-slate-750 text-white text-xs focus:outline-none focus:border-indigo-500"
                 />
               </div>
@@ -790,7 +790,7 @@ export const ResumeManagerModal: React.FC<ResumeManagerModalProps> = ({
                   type="text"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="e.g. +91 98765 43210"
+                  placeholder="e.g. +1 (555) 019-2834"
                   className="w-full px-3 py-2 rounded-xl bg-slate-850 border border-slate-750 text-white text-xs focus:outline-none focus:border-indigo-500"
                 />
               </div>

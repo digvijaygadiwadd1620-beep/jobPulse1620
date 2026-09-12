@@ -63,8 +63,8 @@ export const AlertSettingsModal: React.FC<AlertSettingsModalProps> = ({
   const [detectResult, setDetectResult] = useState<{ success: boolean; message: string } | null>(null);
 
   // Adzuna credentials
-  const [adzunaAppId, setAdzunaAppId] = useState<string>(config?.adzuna_app_id || "066adfaf");
-  const [adzunaAppKey, setAdzunaAppKey] = useState<string>(config?.adzuna_app_key || "9d8303ee9e09eea727a92c1281addba8");
+  const [adzunaAppId, setAdzunaAppId] = useState<string>(config?.adzuna_app_id || "");
+  const [adzunaAppKey, setAdzunaAppKey] = useState<string>(config?.adzuna_app_key || "");
   const [testingAdzuna, setTestingAdzuna] = useState<boolean>(false);
   const [adzunaTestResult, setAdzunaTestResult] = useState<{ success: boolean; message: string; count?: number } | null>(null);
   const [syncingAdzuna, setSyncingAdzuna] = useState<boolean>(false);
@@ -429,7 +429,7 @@ export const AlertSettingsModal: React.FC<AlertSettingsModalProps> = ({
                 type="text"
                 value={adzunaAppId}
                 onChange={(e) => setAdzunaAppId(e.target.value)}
-                placeholder="e.g. 066adfaf"
+                placeholder="Adzuna App ID"
                 className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-750 text-white text-xs font-mono focus:outline-none focus:border-emerald-500"
               />
             </div>

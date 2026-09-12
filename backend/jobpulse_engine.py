@@ -228,31 +228,24 @@ def init_db():
         auto_scan_enabled INTEGER DEFAULT 1,
         scan_interval_minutes INTEGER DEFAULT 5,
         desktop_notifications INTEGER DEFAULT 1,
-        adzuna_app_id TEXT DEFAULT '066adfaf',
-        adzuna_app_key TEXT DEFAULT '9d8303ee9e09eea727a92c1281addba8'
+        adzuna_app_id TEXT DEFAULT '',
+        adzuna_app_key TEXT DEFAULT ''
     );
     """)
 
     # Alter table if needed for existing DB
     try:
-        cursor.execute("ALTER TABLE alert_config ADD COLUMN adzuna_app_id TEXT DEFAULT '066adfaf';")
+        cursor.execute("ALTER TABLE alert_config ADD COLUMN adzuna_app_id TEXT DEFAULT '';")
     except:
         pass
     try:
-        cursor.execute("ALTER TABLE alert_config ADD COLUMN adzuna_app_key TEXT DEFAULT '9d8303ee9e09eea727a92c1281addba8';")
+        cursor.execute("ALTER TABLE alert_config ADD COLUMN adzuna_app_key TEXT DEFAULT '';")
     except:
         pass
 
     cursor.execute("""
     INSERT OR IGNORE INTO alert_config (id, min_score_alert, auto_scan_enabled, scan_interval_minutes, desktop_notifications, adzuna_app_id, adzuna_app_key)
-    VALUES (1, 80, 1, 5, 1, '066adfaf', '9d8303ee9e09eea727a92c1281addba8');
-    """)
-
-    cursor.execute("""
-    UPDATE alert_config
-    SET adzuna_app_id = CASE WHEN adzuna_app_id IS NULL OR adzuna_app_id = '' THEN '066adfaf' ELSE adzuna_app_id END,
-        adzuna_app_key = CASE WHEN adzuna_app_key IS NULL OR adzuna_app_key = '' THEN '9d8303ee9e09eea727a92c1281addba8' ELSE adzuna_app_key END
-    WHERE id = 1;
+    VALUES (1, 80, 1, 5, 1, '', '');
     """)
 
     conn.commit()
@@ -397,15 +390,15 @@ def seed_sample_jobs():
     """Seed comprehensive realistic live jobs across India & Global tech centers."""
     jobs_data = [
         {
-            "id": "job-gl-pune-01",
+            "id": "job-seed-01",
             "title": "QA Test Engineer (Automation & Healthcare)",
-            "company": "GlobalLogic (Hitachi)",
+            "company": "Apex HealthTech",
             "location": "Pune, Maharashtra, India",
             "country": "India",
             "city": "Pune",
             "is_remote": 0,
-            "description": "GlobalLogic is looking for an experienced QA Test Engineer with deep expertise in Selenium, Java, Cypress, and Healthcare clinical workflow validation (HL7 / FHIR / HIPAA). You will design automated regression suites, perform API testing with Postman and REST-assured, and ensure zero-defect software for leading US health systems.",
-            "url": "https://careers.globallogic.com/jobs/qa-test-engineer-pune",
+            "description": "Apex HealthTech is looking for an experienced QA Test Engineer with deep expertise in Selenium, Java, Cypress, and Healthcare clinical workflow validation (HL7 / FHIR / HIPAA). You will design automated regression suites, perform API testing with Postman and REST-assured, and ensure zero-defect software for leading health systems.",
+            "url": "https://careers.apexhealthtech.com/jobs/qa-test-engineer-pune",
             "source": "JobsPipe",
             "salary_min": 1400000,
             "salary_max": 2200000,
@@ -415,16 +408,16 @@ def seed_sample_jobs():
             "posted_at": "2026-09-07T06:30:00Z"
         },
         {
-            "id": "job-wipro-pune-02",
+            "id": "job-seed-02",
             "title": "Senior SDET & Automation Architect",
-            "company": "Wipro Digital",
+            "company": "CloudScale Systems",
             "location": "Hinjewadi, Pune, India",
             "country": "India",
             "city": "Pune",
             "is_remote": 0,
             "description": "Lead automated test architecture using Playwright, Python, and PyTest with CI/CD integration via Docker and GitHub Actions. Experience with performance testing using JMeter and healthcare domain compliance is a huge advantage.",
-            "url": "https://careers.wipro.com/jobs/sdet-pune",
-            "source": "Adzuna",
+            "url": "https://careers.cloudscalesystems.com/jobs/sdet-pune",
+            "source": "LinkedIn",
             "salary_min": 1800000,
             "salary_max": 2800000,
             "salary_currency": "INR",
@@ -433,15 +426,15 @@ def seed_sample_jobs():
             "posted_at": "2026-09-07T05:15:00Z"
         },
         {
-            "id": "job-optum-blr-03",
+            "id": "job-seed-03",
             "title": "Healthcare QA Automation Lead",
-            "company": "Optum (UnitedHealth Group)",
+            "company": "CareMatrix Labs",
             "location": "Bengaluru, Karnataka, India",
             "country": "India",
             "city": "Bangalore",
             "is_remote": 1,
-            "description": "Drive quality engineering for UnitedHealth core patient portal. Requirements: 4+ years in Test Automation using Cypress, Selenium, Postman, Cucumber BDD, and Healthcare standards including EHR, FHIR, and HIPAA compliance.",
-            "url": "https://careers.unitedhealthgroup.com/jobs/qa-lead-blr",
+            "description": "Drive quality engineering for core clinical patient portals. Requirements: 4+ years in Test Automation using Cypress, Selenium, Postman, Cucumber BDD, and Healthcare standards including EHR, FHIR, and HIPAA compliance.",
+            "url": "https://careers.carematrixlabs.com/jobs/qa-lead-blr",
             "source": "JobsPipe",
             "salary_min": 2000000,
             "salary_max": 3200000,
@@ -451,16 +444,16 @@ def seed_sample_jobs():
             "posted_at": "2026-09-07T07:10:00Z"
         },
         {
-            "id": "job-tcs-hyd-04",
+            "id": "job-seed-04",
             "title": "Full Stack Engineer (React + Node.js)",
-            "company": "Tata Consultancy Services",
+            "company": "Enterprise Digital Solutions",
             "location": "HITEC City, Hyderabad, India",
             "country": "India",
             "city": "Hyderabad",
             "is_remote": 0,
-            "description": "TCS Interactive is seeking a Full Stack Developer proficient in React, TypeScript, Node.js, Express, and PostgreSQL. Experience building responsive web applications, managing state with Redux or Zustand, and container deployment on AWS.",
-            "url": "https://careers.tcs.com/jobs/fullstack-hyd",
-            "source": "JobsPipe",
+            "description": "Enterprise Digital Solutions is seeking a Full Stack Developer proficient in React, TypeScript, Node.js, Express, and PostgreSQL. Experience building responsive web applications, managing state with Redux or Zustand, and container deployment on AWS.",
+            "url": "https://careers.enterprisedigital.com/jobs/fullstack-hyd",
+            "source": "JobPulse Direct",
             "salary_min": 1200000,
             "salary_max": 2000000,
             "salary_currency": "INR",
@@ -469,15 +462,15 @@ def seed_sample_jobs():
             "posted_at": "2026-09-07T04:45:00Z"
         },
         {
-            "id": "job-ms-blr-05",
+            "id": "job-seed-05",
             "title": "Senior Cloud DevOps & Kubernetes Engineer",
-            "company": "Microsoft India R&D",
+            "company": "Aura Cloud Networks",
             "location": "Bengaluru, India",
             "country": "India",
             "city": "Bangalore",
             "is_remote": 1,
-            "description": "Work on hyperscale Azure infrastructure. Strong hands-on knowledge in Kubernetes (K8s), Terraform, Linux internals, Docker, Prometheus, Grafana, and CI/CD automation pipelines. Python or Go scripting required.",
-            "url": "https://careers.microsoft.com/jobs/cloud-devops-blr",
+            "description": "Work on hyperscale cloud infrastructure. Strong hands-on knowledge in Kubernetes (K8s), Terraform, Linux internals, Docker, Prometheus, Grafana, and CI/CD automation pipelines. Python or Go scripting required.",
+            "url": "https://careers.auracloud.com/jobs/cloud-devops-blr",
             "source": "LinkedIn",
             "salary_min": 3500000,
             "salary_max": 5500000,
@@ -487,16 +480,16 @@ def seed_sample_jobs():
             "posted_at": "2026-09-07T08:00:00Z"
         },
         {
-            "id": "job-stripe-us-06",
+            "id": "job-seed-06",
             "title": "Staff Software Engineer - Financial Infrastructure",
-            "company": "Stripe",
+            "company": "FinFlow Platform",
             "location": "San Francisco, CA, USA",
             "country": "USA",
             "city": "San Francisco",
             "is_remote": 1,
             "description": "Build high-throughput, low-latency financial ledgers. We need deep proficiency with distributed systems, Ruby or Go, PostgreSQL, Redis, and high security PCI-DSS standards.",
-            "url": "https://stripe.com/jobs/staff-swe-sf",
-            "source": "Adzuna",
+            "url": "https://careers.finflowplatform.com/jobs/staff-swe-sf",
+            "source": "TechCareers",
             "salary_min": 190000,
             "salary_max": 260000,
             "salary_currency": "USD",
@@ -505,15 +498,15 @@ def seed_sample_jobs():
             "posted_at": "2026-09-07T03:00:00Z"
         },
         {
-            "id": "job-revolut-lon-07",
+            "id": "job-seed-07",
             "title": "Lead Backend Engineer (Python & Microservices)",
-            "company": "Revolut",
+            "company": "NovaPay Banking",
             "location": "London, United Kingdom",
             "country": "UK",
             "city": "London",
             "is_remote": 1,
-            "description": "Join Europe's fastest growing fintech bank. Build real-time trading engines using Python (FastAPI/asyncio), PostgreSQL, Kafka, and Docker. Experience in banking regulations and automated testing with PyTest.",
-            "url": "https://revolut.com/careers/lead-backend-london",
+            "description": "Join Europe's modern fintech bank. Build real-time trading engines using Python (FastAPI/asyncio), PostgreSQL, Kafka, and Docker. Experience in banking regulations and automated testing with PyTest.",
+            "url": "https://careers.novapaybank.com/jobs/lead-backend-london",
             "source": "JobsPipe",
             "salary_min": 95000,
             "salary_max": 140000,
@@ -523,16 +516,16 @@ def seed_sample_jobs():
             "posted_at": "2026-09-06T20:30:00Z"
         },
         {
-            "id": "job-zalando-ber-08",
+            "id": "job-seed-08",
             "title": "Senior Frontend Developer (React/TypeScript)",
-            "company": "Zalando SE",
+            "company": "NextCart Commerce",
             "location": "Berlin, Germany",
             "country": "Germany",
             "city": "Berlin",
             "is_remote": 1,
             "description": "Design customer-facing e-commerce shopping workflows in React, TypeScript, Next.js, Tailwind, and Jest. Strong understanding of web vitals, accessibility, and GraphQL APIs.",
-            "url": "https://jobs.zalando.com/en/berlin-frontend",
-            "source": "Adzuna",
+            "url": "https://careers.nextcart.de/jobs/berlin-frontend",
+            "source": "TechCareers",
             "salary_min": 75000,
             "salary_max": 105000,
             "salary_currency": "EUR",
@@ -541,15 +534,15 @@ def seed_sample_jobs():
             "posted_at": "2026-09-07T06:00:00Z"
         },
         {
-            "id": "job-careem-dub-09",
+            "id": "job-seed-09",
             "title": "Senior Site Reliability Engineer (SRE)",
-            "company": "Careem (Uber)",
+            "company": "SkyLine Mobility",
             "location": "Dubai, United Arab Emirates",
             "country": "UAE",
             "city": "Dubai",
             "is_remote": 0,
-            "description": "Scale SuperApp infrastructure across the Middle East. Seeking expertise in AWS, Terraform, Kubernetes, Linux performance tuning, Datadog monitoring, and Python automation.",
-            "url": "https://careem.com/careers/sre-dubai",
+            "description": "Scale mobility superapp infrastructure across the Middle East. Seeking expertise in AWS, Terraform, Kubernetes, Linux performance tuning, Datadog monitoring, and Python automation.",
+            "url": "https://careers.skylinemobility.ae/jobs/sre-dubai",
             "source": "JobsPipe",
             "salary_min": 240000,
             "salary_max": 360000,
@@ -559,16 +552,16 @@ def seed_sample_jobs():
             "posted_at": "2026-09-06T18:00:00Z"
         },
         {
-            "id": "job-grab-sg-10",
+            "id": "job-seed-10",
             "title": "QA Automation Lead (Mobile & Web)",
-            "company": "Grab Holdings",
+            "company": "OmniRide Logistics",
             "location": "Singapore",
             "country": "Singapore",
             "city": "Singapore",
             "is_remote": 0,
-            "description": "Drive quality across GrabPay and deliveries in Southeast Asia. Deep experience in Appium, Selenium, Python, Java, API testing, and CI/CD pipelines.",
-            "url": "https://grab.careers/jobs/qa-lead-singapore",
-            "source": "Adzuna",
+            "description": "Drive quality across fintech payments and deliveries. Deep experience in Appium, Selenium, Python, Java, API testing, and CI/CD pipelines.",
+            "url": "https://careers.omniride.sg/jobs/qa-lead-singapore",
+            "source": "JobPulse Direct",
             "salary_min": 90000,
             "salary_max": 135000,
             "salary_currency": "SGD",
@@ -577,15 +570,15 @@ def seed_sample_jobs():
             "posted_at": "2026-09-07T02:00:00Z"
         },
         {
-            "id": "job-canva-syd-11",
+            "id": "job-seed-11",
             "title": "Full Stack Engineer (TypeScript & React)",
-            "company": "Canva",
+            "company": "VividCanvas Design",
             "location": "Sydney, Australia",
             "country": "Australia",
             "city": "Sydney",
             "is_remote": 1,
-            "description": "Empower the world to design. Create real-time collaborative editing experiences using TypeScript, React, WebGL, Node.js, and AWS DynamoDB.",
-            "url": "https://canva.com/careers/fullstack-sydney",
+            "description": "Create real-time collaborative editing experiences using TypeScript, React, WebGL, Node.js, and AWS DynamoDB.",
+            "url": "https://careers.vividcanvas.com.au/jobs/fullstack-sydney",
             "source": "LinkedIn",
             "salary_min": 140000,
             "salary_max": 185000,
@@ -595,15 +588,15 @@ def seed_sample_jobs():
             "posted_at": "2026-09-07T01:30:00Z"
         },
         {
-            "id": "job-cognizant-mum-12",
+            "id": "job-seed-12",
             "title": "Lead Healthcare Data Analyst",
-            "company": "Cognizant Technology Solutions",
+            "company": "BioMetrics Analytics",
             "location": "Airoli, Mumbai, India",
             "country": "India",
             "city": "Mumbai",
             "is_remote": 0,
             "description": "Analyze clinical EHR datasets and healthcare claims. Requires SQL, Python (Pandas, NumPy), Tableau, Power BI, HL7 data standards, and HIPAA compliance.",
-            "url": "https://careers.cognizant.com/jobs/healthcare-analyst-mumbai",
+            "url": "https://careers.biometricsanalytics.com/jobs/healthcare-analyst-mumbai",
             "source": "JobsPipe",
             "salary_min": 1500000,
             "salary_max": 2400000,
@@ -636,7 +629,7 @@ def seed_sample_jobs():
     conn.close()
 
 def seed_default_resume():
-    """Seed sample resume matching user prompt profile (QA Test Engineer with Healthcare focus)."""
+    """Seed default candidate profile (QA Test Engineer with Healthcare focus)."""
     conn = get_db()
     cursor = conn.cursor()
 
@@ -647,9 +640,9 @@ def seed_default_resume():
 
     sample_resume = {
         "id": "resume-default-01",
-        "name": "Digvijay Gadiwadd",
-        "email": "digvijaygadiwadd1620@gmail.com",
-        "phone": "+91 98765 43210",
+        "name": "Alex Morgan",
+        "email": "alex.morgan@example.com",
+        "phone": "+1 (555) 019-2834",
         "target_title": "QA Test Engineer / Automation SDET",
         "domain": "healthcare",
         "years_experience": 4,
@@ -658,9 +651,9 @@ def seed_default_resume():
             "healthcare", "hl7", "hipaa", "jira", "pytest", "python", "sql", "git"
         ],
         "raw_text": """
-DIGVIJAY GADIWADD
+ALEX MORGAN
 QA Test Engineer | Automation SDET | Healthcare Domain Specialist
-Email: digvijaygadiwadd1620@gmail.com | Phone: +91 98765 43210 | Location: Pune, India
+Email: alex.morgan@example.com | Phone: +1 (555) 019-2834 | Location: Pune, India
 
 PROFESSIONAL SUMMARY:
 Results-driven QA Test Engineer with 4+ years of experience designing and executing comprehensive automated testing frameworks across Web, Mobile, and REST APIs. Specialized in Healthcare IT domains including HL7, FHIR, HIPAA standards, EHR systems, and clinical patient data validation. Skilled in Selenium WebDriver, Cypress, Java, Python, Postman, and CI/CD pipelines.
@@ -709,8 +702,8 @@ def test_adzuna(app_id=None, app_key=None):
     cfg = cursor.fetchone()
     conn.close()
 
-    aid = app_id or os.environ.get("ADZUNA_APP_ID") or (cfg["adzuna_app_id"] if cfg and "adzuna_app_id" in cfg.keys() else "") or "066adfaf"
-    akey = app_key or os.environ.get("ADZUNA_APP_KEY") or os.environ.get("ADZUNA_API_KEY") or (cfg["adzuna_app_key"] if cfg and "adzuna_app_key" in cfg.keys() else "") or "9d8303ee9e09eea727a92c1281addba8"
+    aid = app_id or os.environ.get("ADZUNA_APP_ID") or (cfg["adzuna_app_id"] if cfg and "adzuna_app_id" in cfg.keys() else "") or ""
+    akey = app_key or os.environ.get("ADZUNA_APP_KEY") or os.environ.get("ADZUNA_API_KEY") or (cfg["adzuna_app_key"] if cfg and "adzuna_app_key" in cfg.keys() else "") or ""
 
     if not aid or not akey:
         return {"status": "error", "error": "Adzuna App ID and API Key must be specified."}
@@ -824,8 +817,8 @@ def fetch_and_store_adzuna_jobs(resume=None, force=False):
 
     cursor.execute("SELECT adzuna_app_id, adzuna_app_key FROM alert_config WHERE id = 1")
     cfg = cursor.fetchone()
-    app_id = os.environ.get("ADZUNA_APP_ID") or (cfg["adzuna_app_id"] if cfg and "adzuna_app_id" in cfg.keys() else "") or "066adfaf"
-    app_key = os.environ.get("ADZUNA_APP_KEY") or os.environ.get("ADZUNA_API_KEY") or (cfg["adzuna_app_key"] if cfg and "adzuna_app_key" in cfg.keys() else "") or "9d8303ee9e09eea727a92c1281addba8"
+    app_id = os.environ.get("ADZUNA_APP_ID") or (cfg["adzuna_app_id"] if cfg and "adzuna_app_id" in cfg.keys() else "") or ""
+    app_key = os.environ.get("ADZUNA_APP_KEY") or os.environ.get("ADZUNA_API_KEY") or (cfg["adzuna_app_key"] if cfg and "adzuna_app_key" in cfg.keys() else "") or ""
 
     if not app_id or not app_key:
         conn.close()
@@ -1457,8 +1450,8 @@ def save_alert_config(data):
         1 if data.get("auto_scan_enabled") else 0,
         int(data.get("scan_interval_minutes", 5)),
         1 if data.get("desktop_notifications") else 0,
-        data.get("adzuna_app_id", "066adfaf"),
-        data.get("adzuna_app_key", "9d8303ee9e09eea727a92c1281addba8")
+        data.get("adzuna_app_id", ""),
+        data.get("adzuna_app_key", "")
     ))
     conn.commit()
     conn.close()
@@ -1540,8 +1533,8 @@ if __name__ == "__main__":
         print(json.dumps(result))
 
     elif action == "test_adzuna":
-        app_id = sys.argv[2] if len(sys.argv) > 2 else "066adfaf"
-        app_key = sys.argv[3] if len(sys.argv) > 3 else "9d8303ee9e09eea727a92c1281addba8"
+        app_id = sys.argv[2] if len(sys.argv) > 2 else os.environ.get("ADZUNA_APP_ID", "")
+        app_key = sys.argv[3] if len(sys.argv) > 3 else (os.environ.get("ADZUNA_APP_KEY") or os.environ.get("ADZUNA_API_KEY", ""))
         result = test_adzuna(app_id, app_key)
         print(json.dumps(result))
 

@@ -133,7 +133,7 @@ app.get("/api/stats", async (req, res) => {
   }
 });
 
-app.get("/api/jobs", async (req, res) => {
+app.get(["/api/jobs", "/api/matches"], async (req, res) => {
   try {
     const filters = {
       city: req.query.city || "all",
@@ -160,7 +160,7 @@ app.post(["/api/scan/trigger", "/api/jobs/scan"], async (req, res) => {
     if (req.body?.candidate_name && req.body?.skills) {
       try {
         const saveRes = await runPythonEngine(["save_resume", JSON.stringify({
-          id: resumeId || "profile-dg-01",
+          id: resumeId || "profile-candidate-01",
           name: req.body.candidate_name,
           target_title: req.body.target_title || "QA Test Engineer",
           domain: req.body.domain || "healthcare",
@@ -871,8 +871,8 @@ app.post("/api/alerts/telegram/test", async (req, res) => {
 app.post("/api/adzuna/test", async (req, res) => {
   try {
     const { app_id, app_key } = req.body;
-    const aid = app_id || process.env.ADZUNA_APP_ID || "066adfaf";
-    const akey = app_key || process.env.ADZUNA_APP_KEY || process.env.ADZUNA_API_KEY || "9d8303ee9e09eea727a92c1281addba8";
+    const aid = app_id || process.env.ADZUNA_APP_ID || "";
+    const akey = app_key || process.env.ADZUNA_APP_KEY || process.env.ADZUNA_API_KEY || "";
     const result = await runPythonEngine(["test_adzuna", aid, akey]);
     res.json(result);
   } catch (err: any) {

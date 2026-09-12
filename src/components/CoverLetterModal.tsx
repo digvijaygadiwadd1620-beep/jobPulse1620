@@ -39,7 +39,7 @@ export const CoverLetterModal: React.FC<CoverLetterModalProps> = ({
           company: match.company,
           location: match.location,
           job_description: match.description,
-          resume_name: profile?.name || "Digvijay Gadiwadd",
+          resume_name: profile?.name || "Alex Morgan",
           resume_text: profile?.raw_text || "",
           skills: profile?.skills || match.matched_skills,
           tone: selectedTone

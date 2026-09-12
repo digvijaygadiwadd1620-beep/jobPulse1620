@@ -2,7 +2,26 @@ node_modules/
 build/
 dist/
 coverage/
-.DS_Store
 *.log
-.env*
+
+# Sensitive local database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment variables / Secrets
+.env
+.env.local
+.env.*.local
 !.env.example
+
+# Python cache & build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# OS / Editor clutter
+.DS_Store
+Thumbs.db
+*.swp

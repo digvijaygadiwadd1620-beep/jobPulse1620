@@ -76,7 +76,7 @@ export const AgentScannerLogs: React.FC<AgentScannerLogsProps> = ({
             [2026-09-07 15:45:01] <span className="text-emerald-400">[DB]</span> SQLite database connected. Dedup cache initialized.
           </p>
           <p className="text-slate-400">
-            [2026-09-07 15:45:02] <span className="text-indigo-400">[PARSER]</span> Active profile loaded: Digvijay Gadiwadd (QA Test Engineer, Healthcare).
+            [2026-09-07 15:45:02] <span className="text-indigo-400">[PARSER]</span> Active profile loaded: Alex Morgan (QA Test Engineer, Healthcare).
           </p>
           <p className="text-slate-400">
             [2026-09-07 15:45:03] <span className="text-sky-400">[AGGREGATOR]</span> Querying JobsPipe (LinkedIn, Indeed, Naukri) & Adzuna for Pune, Bangalore, Hyderabad, USA, Remote...

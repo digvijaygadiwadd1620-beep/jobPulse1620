@@ -3,9 +3,9 @@ import { ResumeProfile } from "../types";
 export const SAMPLE_PROFILES: ResumeProfile[] = [
   {
     id: "resume-default-01",
-    name: "Digvijay Gadiwadd",
-    email: "digvijaygadiwadd1620@gmail.com",
-    phone: "+91 98765 43210",
+    name: "Alex Morgan",
+    email: "alex.morgan@example.com",
+    phone: "+1 (555) 019-2834",
     target_title: "QA Test Engineer / Automation SDET",
     domain: "healthcare",
     years_experience: 4,
@@ -13,9 +13,9 @@ export const SAMPLE_PROFILES: ResumeProfile[] = [
       "selenium", "java", "cypress", "postman", "api testing", "automation testing",
       "healthcare", "hl7", "hipaa", "jira", "pytest", "python", "sql", "git"
     ],
-    raw_text: `DIGVIJAY GADIWADD
+    raw_text: `ALEX MORGAN
 QA Test Engineer | Automation SDET | Healthcare Domain Specialist
-Email: digvijaygadiwadd1620@gmail.com | Location: Pune, India | Phone: +91 98765 43210
+Email: alex.morgan@example.com | Location: Pune, India | Phone: +1 (555) 019-2834
 
 PROFESSIONAL SUMMARY:
 Results-driven QA Test Engineer with 4+ years of hands-on experience designing and executing scalable automated testing suites across Web, Mobile, and REST APIs. Specialized in Healthcare IT domains including HL7, FHIR, HIPAA standards, EHR systems, and clinical patient data validation. Skilled in Selenium WebDriver, Cypress, Java, Python, Postman, and CI/CD pipelines.
@@ -41,7 +41,7 @@ QA Software Tester | TechSolutions Pune (2020 - 2022)
     id: "resume-fullstack-02",
     name: "Aarav Sharma",
     email: "aarav.sharma@example.com",
-    phone: "+91 91234 56789",
+    phone: "+1 (555) 012-3456",
     target_title: "Full Stack Engineer (React + Node.js)",
     domain: "fullstack",
     years_experience: 5,
