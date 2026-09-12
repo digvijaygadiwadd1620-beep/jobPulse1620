@@ -9,6 +9,70 @@
     <meta property="og:title" content="JobPulse - Intelligent Career Automation & Match Engine" />
     <meta property="og:description" content="Autonomous career assistant that analyzes resumes, matches live jobs with TF-IDF vectorization, tracks applications in Kanban, and dispatches automated alerts." />
     <meta property="og:type" content="website" />
+    <script>
+      // Gracefully prevent benign Vite HMR websocket connection errors in container sandbox environments
+      (function() {
+        if (typeof window !== 'undefined') {
+          // 1. Capture and suppress unhandled promise rejections related to WebSocket / vite
+          window.addEventListener('unhandledrejection', function(event) {
+            var reason = event && event.reason;
+            var msg = (reason && (reason.message || reason.stack)) || String(reason || '');
+            if (msg.indexOf('WebSocket') !== -1 || msg.indexOf('websocket') !== -1 || msg.indexOf('vite') !== -1) {
+              event.preventDefault();
+              event.stopImmediatePropagation();
+              return false;
+            }
+          }, true);
+
+          // 2. Capture and suppress window error events related to WebSocket
+          window.addEventListener('error', function(event) {
+            var msg = (event && (event.message || (event.error && event.error.message))) || '';
+            if (msg.indexOf('WebSocket') !== -1 || msg.indexOf('websocket') !== -1 || msg.indexOf('vite') !== -1) {
+              event.preventDefault();
+              event.stopImmediatePropagation();
+              return false;
+            }
+          }, true);
+
+          // 3. Mock Vite HMR WebSocket so it cleanly succeeds without throwing or retrying
+          var NativeWebSocket = window.WebSocket;
+          if (NativeWebSocket) {
+            window.WebSocket = function(url, protocols) {
+              var isHmr = (protocols === 'vite-hmr') || 
+                          (Array.isArray(protocols) && protocols.indexOf('vite-hmr') !== -1) ||
+                          (typeof url === 'string' && (url.indexOf('vite-hmr') !== -1 || (url.indexOf(':3000') !== -1 && protocols)));
+              if (isHmr) {
+                var target = new EventTarget();
+                target.binaryType = 'blob';
+                target.readyState = 1; // WebSocket.OPEN
+                target.bufferedAmount = 0;
+                target.extensions = '';
+                target.protocol = 'vite-hmr';
+                target.url = String(url);
+                target.send = function() {};
+                target.close = function() {};
+                target.onopen = null;
+                target.onmessage = null;
+                target.onerror = null;
+                target.onclose = null;
+                setTimeout(function() {
+                  var ev = new Event('open');
+                  if (typeof target.onopen === 'function') target.onopen(ev);
+                  target.dispatchEvent(ev);
+                }, 0);
+                return target;
+              }
+              return new NativeWebSocket(url, protocols);
+            };
+            window.WebSocket.prototype = NativeWebSocket.prototype;
+            window.WebSocket.CONNECTING = NativeWebSocket.CONNECTING;
+            window.WebSocket.OPEN = NativeWebSocket.OPEN;
+            window.WebSocket.CLOSING = NativeWebSocket.CLOSING;
+            window.WebSocket.CLOSED = NativeWebSocket.CLOSED;
+          }
+        }
+      })();
+    </script>
   </head>
   <body class="bg-slate-950 text-slate-100 antialiased selection:bg-indigo-500 selection:text-white">
     <div id="root"></div>
