@@ -11,16 +11,32 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
-// Enable CORS for all origins, iframe embedders, and development environments
+// CORS configuration for local development and authorized frontend origins
+const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
+  : ["http://localhost:3000", "http://127.0.0.1:3000"];
+
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  const origin = req.headers.origin;
+  if (!origin || ALLOWED_ORIGINS.includes("*") || ALLOWED_ORIGINS.includes(origin) || process.env.NODE_ENV !== "production") {
+    res.header("Access-Control-Allow-Origin", origin || "*");
+  }
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-API-Key");
   if (req.method === "OPTIONS") {
     return res.sendStatus(200);
   }
   next();
 });
+
+// Optional API key authorization for endpoints (configurable via JOBPULSE_API_KEY)
+const API_AUTH_KEY = process.env.JOBPULSE_API_KEY;
+function requireAuth(req: express.Request, res: express.Response, next: express.NextFunction) {
+  if (!API_AUTH_KEY) return next();
+  const providedKey = req.header("X-API-Key") || (req.query.api_key as string);
+  if (providedKey === API_AUTH_KEY) return next();
+  return res.status(401).json({ error: "Unauthorized: Invalid or missing API key" });
+}
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
@@ -40,14 +56,13 @@ function getAI(): GoogleGenAI | null {
 }
 
 /**
- * Safe multi-model caller for Gemini with resilience against 503 high-demand spikes
- * and 429 quota limits. Prioritizes low-latency, high-availability gemini-3.1-flash-lite,
- * then tries gemini-3.8-flash, gemini-flash-latest, and gemini-3.1-pro-preview.
+ * Gemini model caller with multi-model fallback across flash and pro tiers.
+ * Tries low-latency flash first, falling back to pro or alternate flash tiers on 429/503 limits.
  */
 async function callGeminiSafe(
   prompt: string,
   config?: { responseMimeType?: string },
-  candidateModels: string[] = ["gemini-3.1-flash-lite", "gemini-3.8-flash", "gemini-flash-latest", "gemini-3.1-pro-preview"]
+  candidateModels: string[] = ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-1.5-flash"]
 ): Promise<string | null> {
   const ai = getAI();
   if (!ai) return null;
@@ -69,7 +84,6 @@ async function callGeminiSafe(
         const is429 = errMsg.includes("429") || errMsg.includes("RESOURCE_EXHAUSTED") || errMsg.includes("quota");
 
         if (is503 && attempt === 0) {
-          // Brief pause before retry on temporary demand spike
           await new Promise((resolve) => setTimeout(resolve, 300));
           continue;
         }
@@ -133,7 +147,7 @@ app.get("/api/stats", async (req, res) => {
   }
 });
 
-app.get(["/api/jobs", "/api/matches"], async (req, res) => {
+app.get("/api/jobs", async (req, res) => {
   try {
     const filters = {
       city: req.query.city || "all",
@@ -151,7 +165,7 @@ app.get(["/api/jobs", "/api/matches"], async (req, res) => {
   }
 });
 
-app.post(["/api/scan/trigger", "/api/jobs/scan"], async (req, res) => {
+app.post("/api/jobs/scan", requireAuth, async (req, res) => {
   try {
     const resumeId = req.body?.resume_id || "";
     let scanResult: any = null;
@@ -187,7 +201,7 @@ app.post(["/api/scan/trigger", "/api/jobs/scan"], async (req, res) => {
   }
 });
 
-app.patch("/api/matches/:id", async (req, res) => {
+app.patch("/api/matches/:id", requireAuth, async (req, res) => {
   try {
     const matchId = req.params.id;
     const updateResult = await runPythonEngine(["update_match", matchId, JSON.stringify(req.body || {})]);
@@ -465,7 +479,7 @@ function fallbackDeepParseResume(text: string, fileName?: string) {
 // Deep Resume Parsing & Management Routes
 // -------------------------------------------------------------
 
-app.post("/api/resume/parse", async (req, res) => {
+app.post("/api/resume/parse", requireAuth, async (req, res) => {
   try {
     const { raw_text, file_base64, file_name, mime_type } = req.body;
     let extractedText = raw_text || "";
@@ -686,7 +700,7 @@ app.get("/api/resumes", async (_req, res) => {
 });
 
 // Save / Update a candidate profile & trigger automatic re-scoring
-app.post(["/api/resume", "/api/resumes"], async (req, res) => {
+app.post("/api/resumes", requireAuth, async (req, res) => {
   try {
     const payload = req.body || {};
     if (!payload.id) {
@@ -700,7 +714,7 @@ app.post(["/api/resume", "/api/resumes"], async (req, res) => {
 });
 
 // Activate a specific profile & re-scan
-app.post("/api/resumes/:id/activate", async (req, res) => {
+app.post("/api/resumes/:id/activate", requireAuth, async (req, res) => {
   try {
     const resumeId = req.params.id;
     const result = await runPythonEngine(["set_active_resume", resumeId]);
@@ -711,7 +725,7 @@ app.post("/api/resumes/:id/activate", async (req, res) => {
 });
 
 // Delete a candidate profile
-app.delete("/api/resumes/:id", async (req, res) => {
+app.delete("/api/resumes/:id", requireAuth, async (req, res) => {
   try {
     const resumeId = req.params.id;
     const result = await runPythonEngine(["delete_resume", resumeId]);
@@ -721,7 +735,7 @@ app.delete("/api/resumes/:id", async (req, res) => {
   }
 });
 
-app.get(["/api/config", "/api/alerts/config"], async (_req, res) => {
+app.get("/api/alerts/config", async (_req, res) => {
   try {
     const stats = await runPythonEngine(["stats"]);
     res.json(stats.alert_config || {});
@@ -730,7 +744,7 @@ app.get(["/api/config", "/api/alerts/config"], async (_req, res) => {
   }
 });
 
-app.post(["/api/config", "/api/alerts/config"], async (req, res) => {
+app.post("/api/alerts/config", requireAuth, async (req, res) => {
   try {
     await runPythonEngine(["save_config", JSON.stringify(req.body || {})]);
     res.json({
@@ -896,7 +910,7 @@ app.post("/api/adzuna/sync", async (req, res) => {
 // -------------------------------------------------------------
 
 // 1. Cover Letter Generator
-app.post("/api/ai/cover-letter", async (req, res) => {
+app.post("/api/ai/cover-letter", requireAuth, async (req, res) => {
   const { job_title, company, location, job_description, resume_name, resume_text, skills, tone } = req.body;
 
   const prompt = `You are an elite executive career coach and tech recruiter. Write a compelling, highly professional, custom cover letter for the candidate applying to this specific job.
@@ -953,7 +967,7 @@ ${today}`;
 });
 
 // 2. Interview Question Predictor
-app.post("/api/ai/interview-prep", async (req, res) => {
+app.post("/api/ai/interview-prep", requireAuth, async (req, res) => {
   const { job_title, company, job_description, matched_skills, missing_skills } = req.body;
 
   const prompt = `You are a Principal Hiring Manager and Interview Specialist at ${company || "a top tech firm"}.
@@ -1045,7 +1059,7 @@ Return valid JSON ONLY.`;
 });
 
 // 3. Resume Tailoring (Auto-Edit suggestions & ATS Boost)
-app.post("/api/ai/resume-tailor", async (req, res) => {
+app.post("/api/ai/resume-tailor", requireAuth, async (req, res) => {
   const { job_title, company, job_description, matched_skills, missing_skills, resume_text } = req.body;
 
   const prompt = `You are a Senior ATS (Applicant Tracking System) Specialist and Technical Career Advisor.
@@ -1119,7 +1133,7 @@ Return valid JSON ONLY.`;
 });
 
 // 4. Company Research Report
-app.post(["/api/ai/company-intel", "/api/ai/company-research"], async (req, res) => {
+app.post("/api/ai/company-intel", requireAuth, async (req, res) => {
   const { company, job_title, location } = req.body;
 
   const prompt = `Provide an executive company intelligence brief on: ${company} (Hiring for: ${job_title} in ${location}).

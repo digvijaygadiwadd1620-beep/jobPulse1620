@@ -9,6 +9,7 @@ export const SAMPLE_PROFILES: ResumeProfile[] = [
     target_title: "QA Test Engineer / Automation SDET",
     domain: "healthcare",
     years_experience: 4,
+    is_active: 1,
     skills: [
       "selenium", "java", "cypress", "postman", "api testing", "automation testing",
       "healthcare", "hl7", "hipaa", "jira", "pytest", "python", "sql", "git"

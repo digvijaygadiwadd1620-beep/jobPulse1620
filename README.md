@@ -1,31 +1,31 @@
-# JobPulse — Autonomous Job Aggregator & Real-Time Match Engine
+# JobPulse
 
-An end-to-end intelligent career automation engine that aggregates job listings from global job boards, parses candidate resumes, computes multidimensional semantic match scores (TF-IDF + domain heuristics), generates tailored application materials via Gemini AI, and dispatches real-time alerts.
-
----
-
-## 🌟 Key Capabilities
-
-- **Automated Multi-Source Job Aggregation**: Connects to the Adzuna API and extensible job providers with automatic rate limiting, 60-second caching, and URL normalization.
-- **Multidimensional Match Engine**: Computes similarity using tokenized TF-IDF vector math blended with domain-specific keyword weighting (Healthcare IT, Fintech, DevOps, Full-Stack).
-- **Interactive Resume & Profile Manager**: Multi-profile support with real-time parsing of technical proficiencies, years of experience, and target roles.
-- **AI-Powered Application Toolkit**: Powered by Google Gemini to perform instant Job Description gap analyses and generate customized, tone-adapted cover letters.
-- **Real-Time Dispatch & Notification Engine**: Configurable threshold-based Telegram bot alerts and browser notifications when high-match opportunities (e.g. ≥80%) appear.
-- **Application Pipeline Tracker**: Interactive Kanban workflow (Discovered, Applied, Interviewing, Offered, Rejected) with application metrics and salary analytics.
+A full-stack job discovery, match ranking, and application tracking platform. JobPulse ingests job postings from live APIs, analyzes candidate resumes, calculates multidimensional match scores using tokenized TF-IDF vector similarity and domain-specific weighting, and dispatches automated alerts via Telegram.
 
 ---
 
-## 🏗️ Architecture & Tech Stack
+## Features
+
+- **Automated Job Ingestion**: Connects to the Adzuna API with request deduplication, rate limiting, and database caching.
+- **Hybrid Scoring Algorithm**: Blends normalized TF-IDF cosine similarity with domain-specific keyword boosting (Healthcare, Fintech, QA Automation, DevOps) and experience level alignment.
+- **Resume Parsing & Skill Extraction**: Supports PDF, DOCX, and raw text resume uploads. Extracts core competencies, years of experience, and domain focus.
+- **Application Kanban Tracker**: Drag-and-drop pipeline (Discovered, Applied, Interviewing, Offer, Rejected) with status updates and note logging.
+- **AI Application Tools**: Tailors cover letters, generates ATS optimization suggestions, predicts role-specific interview questions, and provides company research summaries.
+- **Real-Time Telegram Alerts**: Configurable score threshold alerts dispatched directly to Telegram via bot webhook.
+
+---
+
+## System Architecture
 
 ```
 ┌────────────────────────────────────────────────────────┐
-│             React 19 + TypeScript + Tailwind           │
-│       (Interactive Dashboard, Kanban, Profile Modals)  │
+│                   React 19 + Vite                      │
+│      (Tailwind CSS, Modular Modals, Kanban Board)      │
 └───────────────────────────┬────────────────────────────┘
                             │ REST / JSON
 ┌───────────────────────────▼────────────────────────────┐
 │              Node.js + Express (TypeScript)            │
-│       (API Gateway, Subprocess Manager, Gemini Proxy)  │
+│       (API Gateway, Auth Middleware, Subprocess Exec)  │
 └───────────────────────────┬────────────────────────────┘
                             │ CLI Subprocess Invocation
 ┌───────────────────────────▼────────────────────────────┐
@@ -35,75 +35,80 @@ An end-to-end intelligent career automation engine that aggregates job listings 
                             │
               ┌─────────────┴─────────────┐
               ▼                           ▼
-      SQLite Database              Adzuna / External APIs
-     (Indexed, Deduplicated)      (Rate-Limited Ingestion)
+       SQLite Database              Adzuna API
+    (Indexed, Deduplicated)     (Live Job Aggregation)
 ```
 
-- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS, Lucide Icons, Recharts
-- **API Server**: Express.js, TypeScript (`tsx` / `esbuild`)
-- **Intelligence & NLP**: Python 3 standard library engine, Google Gemini 2.5 Flash
-- **Data Persistence**: SQLite 3 with composite unique indexing and deduplication
+### Components
+
+1. **Frontend (`/src`)**:
+   - Built with React 19, TypeScript, and Tailwind CSS.
+   - Modular hook architecture (`useJobMatches`, `useModalState`) decoupling API communications and modal lifecycle from UI rendering.
+   - Sub-component composition for modals (`TelegramSettingsSection`, `AdzunaSettingsSection`, `ScannerThresholdSection`).
+
+2. **Backend Gateway (`server.ts`)**:
+   - Express server written in TypeScript, compiled with `esbuild` for production.
+   - API key authentication middleware (`requireAuth`) securing mutating endpoints.
+   - CORS validation against configured origins.
+   - Subprocess execution wrapper orchestrating the Python engine with timeouts and error handling.
+
+3. **NLP & Scoring Engine (`/backend`)**:
+   - Lightweight Python 3 implementation with zero external machine learning dependencies.
+   - Tokenization, stop-word filtering, n-gram extraction, and TF-IDF vector representation.
+   - Domain scoring heuristics providing context-aware relevance for specialized industries.
+   - SQLite persistence layer with composite unique indices preventing duplicate job ingestion.
 
 ---
 
-## 💡 System Design & Engineering Decisions (Interview Talking Points)
+## Getting Started
 
-### 1. Subprocess Execution vs. Dedicated Microservice
-- **Current Architecture**: Node.js triggers Python CLI subcommands (`python3 backend/jobpulse_engine.py <action>`).
-- **Rationale**: Keeps local execution zero-dependency and self-contained within a single container without needing multiple running daemons or container orchestration during initial deployment.
-- **Production Evolution**: In a high-concurrency production setting, the Python engine would run as a persistent asynchronous worker fleet (e.g., FastAPI or Celery backed by Redis/RabbitMQ) consuming ingestion tasks from a queue.
+### Prerequisites
 
-### 2. Hybrid Scoring Algorithm (TF-IDF + Domain Boosting)
-- **Challenge**: Pure vector embeddings or TF-IDF can score jobs highly if common technical terms match, even if the domain context (e.g., healthcare compliance like HL7/HIPAA) is missing.
-- **Solution**: Combines normalized TF-IDF token frequency overlap with domain keyword boosting (+15–20% weight) and penalty deductions for senior/lead requirement mismatches.
-
-### 3. Aggressive Deduplication & Ingestion Caching
-- Eliminates duplicate listings across boards using a normalized SHA-256 fingerprint of `(company_slug + title_slug + location_slug)`.
-- Protects API rate limits via a 60-second in-memory / database freshness check before querying upstream external job providers.
-
----
-
-## 🔒 Security & Privacy Best Practices
-
-- **Zero Hardcoded Secrets**: No API keys or tokens are stored in the codebase or checked into version control.
-- **Sanitized PII**: All sample candidate profiles, resumes, and test databases use anonymized demo identities.
-- **Explicit Git Exclusions**: `.gitignore` is pre-configured to strictly ignore `*.db`, `*.sqlite`, `.env*`, and Python cache artifacts.
-
----
-
-## 🚀 Quickstart & Local Setup
-
-### 1. Prerequisites
-- Node.js 18+ & npm
+- Node.js 18+ and npm
 - Python 3.9+
 
-### 2. Installation
+### Installation
+
 ```bash
-# Clone the repository
-git clone <your-repo-url>
-cd job-pulse
+# Clone repository
+git clone https://github.com/your-username/jobpulse.git
+cd jobpulse
 
 # Install dependencies
 npm install
 ```
 
-### 3. Environment Configuration
-Copy `.env.example` to `.env`:
+### Configuration
+
+Copy the sample environment file:
+
 ```bash
 cp .env.example .env
 ```
-Configure any desired API keys:
-- `GEMINI_API_KEY`: For AI cover letter generation and gap analysis.
-- `ADZUNA_APP_ID` & `ADZUNA_APP_KEY`: Optional, for live global job search.
-- `TELEGRAM_BOT_TOKEN` & `TELEGRAM_CHAT_ID`: Optional, for automated push alerts.
 
-### 4. Run Development Server
+Key environment variables:
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `PORT` | Web server port (defaults to 3000) | No |
+| `ALLOWED_ORIGINS` | Comma-separated CORS allowed origins | No |
+| `JOBPULSE_API_KEY` | Optional secret key for securing `/api/*` mutating endpoints | No |
+| `GEMINI_API_KEY` | Google Gemini API key for AI generation features | No (falls back to templates) |
+| `ADZUNA_APP_ID` | Adzuna job search application ID | No |
+| `ADZUNA_APP_KEY` | Adzuna job search API key | No |
+
+### Development
+
+Start the development server:
+
 ```bash
 npm run dev
 ```
-Open your browser at `http://localhost:3000`.
 
-### 5. Production Build
+The app will be accessible at `http://localhost:3000`.
+
+### Production Build
+
 ```bash
 npm run build
 npm start
@@ -111,17 +116,26 @@ npm start
 
 ---
 
-## 🧹 Repository Clean-up Note (For Fresh Git History)
+## Testing
 
-Before publishing to a public Git repository, ensure your commit history is completely clean:
+The project includes unit and integration tests across both the TypeScript frontend and the Python NLP engine:
 
 ```bash
-# Option A: Initialize a clean git repository
-rm -rf .git
-git init
-git add .
-git commit -m "feat: Initial commit of JobPulse job search and matching engine"
-git branch -M main
-git remote add origin <your-github-url>
-git push -u origin main --force
+# Run all tests (frontend + backend)
+npm test
+
+# Run frontend unit tests (Vitest)
+npm run test:frontend
+
+# Run Python NLP engine tests
+npm run test:backend
+
+# Run TypeScript typecheck
+npm run lint
 ```
+
+---
+
+## License
+
+MIT

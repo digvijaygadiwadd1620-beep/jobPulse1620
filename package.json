@@ -1,7 +1,7 @@
 {
   "name": "jobpulse",
   "version": "1.0.0",
-  "description": "Autonomous AI-powered job search engine and resume match optimization system with TF-IDF vectorization and multi-channel alerting.",
+  "description": "Full-stack job discovery and resume match ranking platform with TF-IDF vector similarity and automated alert dispatching.",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,7 +10,10 @@
     "start": "node dist/server.cjs",
     "preview": "vite preview",
     "lint": "tsc --noEmit",
-    "test": "python3 -m unittest discover backend -p 'test_*.py' -v",
+    "lint:es": "eslint . --ext .ts,.tsx",
+    "test:frontend": "vitest run",
+    "test:backend": "python3 -m unittest discover backend -p 'test_*.py' -v",
+    "test": "npm run test:frontend && npm run test:backend",
     "clean": "rm -rf dist"
   },
   "keywords": [
@@ -42,11 +45,15 @@
     "@types/express": "^4.17.21",
     "@types/node": "^22.14.0",
     "@types/pdf-parse": "^1.1.5",
+    "@typescript-eslint/eslint-plugin": "^8.70.0",
+    "@typescript-eslint/parser": "^8.70.0",
     "autoprefixer": "^10.4.21",
     "esbuild": "^0.25.0",
+    "eslint": "^10.10.0",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",
-    "vite": "^6.2.3"
+    "vite": "^6.2.3",
+    "vitest": "^5.0.0"
   }
 }
